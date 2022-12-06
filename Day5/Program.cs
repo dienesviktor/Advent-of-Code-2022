@@ -84,6 +84,34 @@ string PartOne()
     return result.ToString();
 }
 
-PartOne();
+string PartTwo()
+{
+    List<List<char>> stacks = ParsingDataOfStacks();
+    List<List<int>> rearrangement = ParsingRearrangementInput();
+
+    foreach (List<int> instructions in rearrangement)
+    {
+        int move = instructions[0];
+        int from = instructions[1] - 1;
+        int to = instructions[2] - 1;
+
+        for (int step = move; step > 0; step--)
+        {
+            char temp = stacks[from][^step];
+            stacks[from].RemoveAt(stacks[from].Count - step);
+            stacks[to].Add(temp);
+        }
+    }
+
+    StringBuilder result = new StringBuilder();
+
+    foreach (List<char> stack in stacks)
+    {
+        result.Append(stack[^1]);
+    }
+
+    return result.ToString();
+}
 
 Console.WriteLine($"Crates on top of each stack after the rearrangement procedure: {PartOne()}");
+Console.WriteLine($"Crates on top of each stack after the rearrangement procedure, with the CrateMover 9001: {PartTwo()}");
