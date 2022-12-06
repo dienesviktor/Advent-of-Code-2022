@@ -40,4 +40,28 @@ int PartOne()
     return -1;
 }
 
+int PartTwo()
+{
+    for (int i = 0; i < data.Length; i++)
+    {
+        StringBuilder temp = new StringBuilder();
+
+        if (i > 13)
+        {
+            for (int j = i - 14; j < i; j++)
+            {
+                temp.Append(data[j]);
+            }
+
+            if (IsUniqueCharacters(temp.ToString()))
+            {
+                return i;
+            }
+        }
+    }
+
+    return -1;
+}
+
 Console.WriteLine($"Number of characters needs to be processed before the first start-of-packet marker is detected: {PartOne()}");
+Console.WriteLine($"Number of characters needs to be processed before the first start-of-packet marker is detected - 14 distinct character: {PartTwo()}");
