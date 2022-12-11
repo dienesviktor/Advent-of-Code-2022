@@ -15,7 +15,7 @@ class Directory
         SubDirectoriesBySize = new();
     }
 
-    public Directory? ReturnDirByPath(string path, Directory mainDirectory)
+    public Directory? ReturnDirectoryByPath(string path, Directory mainDirectory)
     {
         Directory directory = null;
 
@@ -27,7 +27,7 @@ class Directory
             }
             else
             {
-                directory = ReturnDirByPath(path, subDirectory)!;
+                directory = ReturnDirectoryByPath(path, subDirectory)!;
                 if (directory != null) return directory;
             }
         }
@@ -35,7 +35,7 @@ class Directory
         return directory;
     }
 
-    public int CountSizeOfDirectory(Directory directory, int maxSize)
+    public int CountSizeOfDirectory(Directory directory, int size, bool minMaxSwitch)
     {
         int total = 0;
 
@@ -46,10 +46,25 @@ class Directory
 
         foreach (Directory subDirectory in directory.Directories)
         {
-            int directorySize = CountSizeOfDirectory(subDirectory, maxSize);
-            if (directorySize <= maxSize)
+            int directorySize = CountSizeOfDirectory(subDirectory, size, minMaxSwitch);
+
+            if (size != 0)
             {
-                SubDirectoriesBySize.Add(directorySize);
+                switch (minMaxSwitch)
+                {
+                    case true:
+                        if (directorySize <= size)
+                        {
+                            SubDirectoriesBySize.Add(directorySize);
+                        }
+                        break;
+                    case false:
+                        if (directorySize >= size)
+                        {
+                            SubDirectoriesBySize.Add(directorySize);
+                        }
+                        break;
+                }
             }
             total += directorySize;
         }

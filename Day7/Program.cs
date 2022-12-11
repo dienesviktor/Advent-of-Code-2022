@@ -7,13 +7,16 @@ class Program
         string input = "input.txt";
 
         Program Day7 = new Program();
+        Directory root = Day7.CreateFileSystem(input);
 
-        int partOne = Day7.PartOne(input);
+        int partOne = Day7.PartOne(root);
+        int partTwo = Day7.PartTwo(root);
 
         Console.WriteLine($"Sum of the size of directories with a total size of at most 100000 byte: {partOne}");
+        Console.WriteLine($"Size of the smallest directory that, if deleted, would free up enough space: {partTwo}");
     }
 
-    public int PartOne(string input)
+    public Directory CreateFileSystem(string input)
     {
         string[] data = File.ReadAllLines(input);
         string actualPath = string.Empty;
@@ -54,7 +57,7 @@ class Program
                 }
                 else
                 {
-                    Directory mainDirectory = root.ReturnDirByPath(actualPath.Substring(0, actualPath.Length - 1), root)!;
+                    Directory mainDirectory = root.ReturnDirectoryByPath(actualPath.Substring(0, actualPath.Length - 1), root)!;
                     mainDirectory.Directories.Add(subDirectory);
                 }
             }
@@ -65,12 +68,35 @@ class Program
             {
                 string fileName = commands[1];
                 Document newDocument = new Document(fileName, fileSize);
-                Directory mainDirectory = root.ReturnDirByPath(actualPath.Substring(0, actualPath.Length - 1), root)!;
+                Directory mainDirectory = root.ReturnDirectoryByPath(actualPath.Substring(0, actualPath.Length - 1), root)!;
                 mainDirectory.Documents.Add(newDocument);
             }
         }
 
-        root.CountSizeOfDirectory(root, 100000);
-        return root.SubDirectoriesBySize.Sum();
+        return root;
+    }
+
+    public int PartOne(Directory root)
+    {
+        root.SubDirectoriesBySize = new();
+        root.CountSizeOfDirectory(root, 100000, true);
+        int result = root.SubDirectoriesBySize.Sum();
+        return result;
+    }
+
+    public int PartTwo(Directory root)
+    {
+        root.SubDirectoriesBySize = new();
+        int availableSpace = 70000000;
+        int needSpace = 30000000;
+        int usedSpace = root.CountSizeOfDirectory(root, 0, false);
+        int unusedSpace = availableSpace - usedSpace;
+        int needToRemove = needSpace - unusedSpace;
+        
+        root.CountSizeOfDirectory(root, needToRemove, false);
+
+        int minimumToRemove = root.SubDirectoriesBySize.Min();
+
+        return minimumToRemove;
     }
 }
